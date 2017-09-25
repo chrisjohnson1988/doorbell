@@ -11,7 +11,7 @@ devid = os.environ['PUSHING_BOX_KEY']
 def ring(channel):
   now = str(datetime.now())
   print "Ring Ring @ " + now
-  requests.get('https://api.pushingbox.com/pushingbox?devid=' + devid + '&time=' + now)
+  requests.get('http://api.pushingbox.com/pushingbox?devid=' + devid + '&time=' + now)
 
 GPIO.add_event_detect(26, GPIO.RISING, callback=ring)
 
