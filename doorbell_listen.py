@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 import requests
 from datetime import datetime
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(26, GPIO.IN)
+GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 devid = os.environ['PUSHING_BOX_KEY']
 
