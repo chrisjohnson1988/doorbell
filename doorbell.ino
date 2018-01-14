@@ -1,20 +1,17 @@
-const int pulses[] = {1530, 433, 1530, 433, 1530, 433};
+const int PULSES[] = {1530, 433};
+const int PULSE_LENGTH = sizeof(PULSES)/2;
+const int RANGE = 200;
+const int PULSE_COUNT = 6;
+
 volatile int pulsesPos = 0;
-int outPin = 13;
-volatile boolean ringing = false;
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("\nRESET");
   attachInterrupt(0, handleInterrupt, CHANGE);
-  pinMode(outPin, OUTPUT);
 }
 
 void loop() {
-  if(ringing) {
-    digitalWrite(outPin, HIGH);
-    delay(3000);
-    digitalWrite(outPin, LOW);
-    ringing = false;
-  }  
 }
 
 unsigned int diff(int a, int b) {
@@ -26,17 +23,16 @@ void handleInterrupt() {
   const long time = micros();
   const unsigned int duration = time - lastTime;
   
-  if(duration < 10) {
+  if(duration < 50) {
     return;
   }
-  if(diff(duration, pulses[pulsesPos]) < 200) {
-    pulsesPos++;
-    if(pulsesPos == 6) {
-     pulsesPos = 0;
-     ringing = true;
+  
+  if(diff(duration, PULSES[pulsesPos % PULSE_LENGTH]) < RANGE) {  
+    if(++pulsesPos == PULSE_COUNT) {
+      Serial.print("x");
+      pulsesPos = 0;
     }
-  }
-  else {
+  } else {
     pulsesPos = 0;
   }
   lastTime = time;

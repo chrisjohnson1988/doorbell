@@ -1,19 +1,33 @@
+#!/usr/bin/python
 import time
 import os
-import RPi.GPIO as GPIO
 import requests
+import serial
 from datetime import datetime
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(26, GPIO.IN)
 
+PULSE_WINDOW = 3
+TRIGGER_COUNT = 3
+
+ser = serial.Serial('/dev/ttyAMA0', 9600)
 devid = os.environ['PUSHING_BOX_KEY']
 
-def ring(channel):
-  now = str(datetime.now())
-  print "Ring Ring @ " + now
-  requests.get('https://api.pushingbox.com/pushingbox?devid=' + devid + '&time=' + now)
+def pulse():
+  now = time.time()
+  if now - pulse.last < PULSE_WINDOW:
+    pulse.count += 1
+    if pulse.count == TRIGGER_COUNT: ring()
+  elif pulse.count:
+    print "[PULSES] Last " + str(pulse.count) + " @ " + str(datetime.fromtimestamp(pulse.last))
+    pulse.count = 0
+  pulse.last = now
+pulse.last = 0
+pulse.count = 0
 
-GPIO.add_event_detect(26, GPIO.RISING, callback=ring)
+def ring():
+  now = str(datetime.now())
+  print "[INFO] Ring Ring @ " + now
+  requests.get('http://api.pushingbox.com/pushingbox?devid=' + devid + '&time=' + now)
 
 while True:
-  time.sleep(10)
+  if ser.read(1) == 'x': pulse()
+
