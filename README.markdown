@@ -18,12 +18,12 @@ connection which is then detected by the raspberry pi.
 
 3. Disable Serial Getty:
 
-    sudo systemctl stop serial-getty@ttyAMA0.service
-    sudo systemctl disable serial-getty@ttyAMA0.service
+       sudo systemctl stop serial-getty@ttyAMA0.service
+       sudo systemctl disable serial-getty@ttyAMA0.service
 
 4. Install required python packages
 
-    sudo apt-get install python-serial python-requests
+       sudo apt-get install python-serial python-requests
 
 5. Run `doorbell_listen.py`
 
@@ -33,4 +33,3 @@ Provided is a python script which can use a 433mhz transmitter to ring the
 doorbell. This is intended for testing purposes and can be run by executing:
 
     ring.py
-
