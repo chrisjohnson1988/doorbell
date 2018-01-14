@@ -20,6 +20,9 @@ connection which is then detected by the raspberry pi.
 
        sudo systemctl stop serial-getty@ttyAMA0.service
        sudo systemctl disable serial-getty@ttyAMA0.service
+       
+       # Remove console=serial0,115200 from /boot/cmdline.txt
+       sudo nano /boot/cmdline.txt
 
 4. Install required python packages
 
