@@ -10,3 +10,5 @@ for x in range(0, 100):
   time.sleep(0.001530)
   GPIO.output(17, GPIO.LOW);
   time.sleep(0.000433);
+
+GPIO.cleanup()

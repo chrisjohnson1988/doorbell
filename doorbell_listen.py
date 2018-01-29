@@ -6,8 +6,8 @@ import serial
 import socket
 from datetime import datetime
 
-PULSE_WINDOW = 3
-TRIGGER_COUNT = 3
+PULSE_WINDOW = 0.7
+TRIGGER_COUNT = 15
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5007
 
@@ -18,6 +18,8 @@ multicast.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
 def pulse():
   now = time.time()
+  if pulse.count == 0:
+    print "[PULSES] Start @ " + str(datetime.fromtimestamp(now))
   if now - pulse.last < PULSE_WINDOW:
     pulse.count += 1
     if pulse.count == TRIGGER_COUNT: ring()
@@ -33,7 +35,11 @@ def ring():
   print "[INFO] Ring Ring @ " + now
   multicast.sendto("doorbell", (MCAST_GRP, MCAST_PORT))
   requests.get('http://api.pushingbox.com/pushingbox?devid=' + devid + '&time=' + now)
+  time.sleep(10)
+  print "[INFO] Listening again. Buffer contained: " + str(ser.read(ser.inWaiting()))
 
 while True:
-  if ser.read(1) == 'x': pulse()
-
+  data = ser.read(1)
+  if data == 'x': pulse()
+  else:
+    print "[INFO] Non ring byte: " + data
