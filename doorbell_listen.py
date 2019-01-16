@@ -19,14 +19,15 @@ multicast.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 def pulse():
   now = time.time()
   if pulse.count == 0:
-    print "[PULSES] Start @ " + str(datetime.fromtimestamp(now))
+    pulse.start = now
   if now - pulse.last < PULSE_WINDOW:
     pulse.count += 1
     if pulse.count == TRIGGER_COUNT: ring()
   elif pulse.count:
-    print "[PULSES] Last " + str(pulse.count) + " @ " + str(datetime.fromtimestamp(pulse.last))
+    print "[PULSES] Count " + str(pulse.count) + " length "+ str(pulse.last - pulse.start) + " @ " + str(datetime.fromtimestamp(pulse.last))
     pulse.count = 0
   pulse.last = now
+pulse.start = 0
 pulse.last = 0
 pulse.count = 0
 
@@ -39,7 +40,10 @@ def ring():
   print "[INFO] Listening again. Buffer contained: " + str(ser.read(ser.inWaiting()))
 
 while True:
-  data = ser.read(1)
-  if data == 'x': pulse()
-  else:
-    print "[INFO] Non ring byte: " + data
+  try:
+    data = ser.read(1)
+    if data == 'x': pulse()
+    else:
+      print "[INFO] Non ring byte: " + data
+  except Exception:
+    pass
